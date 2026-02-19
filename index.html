@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <!-- iPhone / iOS WebView 修正：避免因寬表格(min-width)而被整頁縮小顯示 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TKD 管理 V4.3.1</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css?v=4.3.1">
+</head>
+<body>
+
+    <header id="appHeader">
+        <div class="calendar-controls">
+            <div class="nav-center" style="margin-right: auto;">
+                <button class="nav-btn" onclick="app.changeMonth(-1)"><i class="ph-bold ph-caret-left"></i></button>
+                <span class="month-title" id="currentMonthLabel" onclick="app.toggleCalendar()" title="點擊收合/展開月曆"></span>
+                <button class="nav-btn" onclick="app.changeMonth(1)"><i class="ph-bold ph-caret-right"></i></button>
+            </div>
+            
+            <div class="right-actions">
+                <button class="header-action-btn" onclick="app.openMonthSummary()" title="全月排程總覽">
+                    <i class="ph-bold ph-calendar-blank" style="color:#2563EB; font-size:1.2rem;"></i>
+                </button>
+                <button class="header-action-btn" onclick="app.exportExcel()" title="匯出 Excel">
+                    <i class="ph-bold ph-microsoft-excel-logo" style="color:#10B981; font-size:1.2rem;"></i>
+                </button>
+                <button class="header-action-btn" onclick="app.printReceipt()" title="列印收據">
+                    <i class="ph-bold ph-printer" style="color:#4B5563; font-size:1.2rem;"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="weekday-row" id="weekdayRow"></div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+    </header>
+
+    <div class="control-bar">
+        <div class="toolbar-row">
+            <div class="search-input" style="display:flex; align-items:center;">
+                <i class="ph ph-magnifying-glass" style="color:#9CA3AF; margin-right:6px;"></i>
+                <input type="text" id="searchInput" placeholder="搜尋姓名..." oninput="app.filterStudents()" style="border:none; background:transparent; width:100%; outline:none;">
+            </div>
+            <button class="btn-action btn-plan" onclick="app.openBatchPlanModal()" title="批次設定方案">
+                <i class="ph-bold ph-credit-card"></i> 方案
+            </button>
+        </div>
+
+        <div class="toolbar-row">
+            <button class="btn-action btn-save" onclick="app.commitBatch()" title="確認並寫入資料" style="padding-left:20px; padding-right:20px;">
+                <i class="ph-bold ph-check"></i> 確定
+            </button>
+            <button class="btn-action btn-cancel" onclick="app.discardBatch()" title="放棄所有變更">
+                <i class="ph-bold ph-x"></i> 取消
+            </button>
+
+            <div style="margin-left:auto; display:flex; gap:8px;">
+                <button class="btn-action btn-danger-outline" id="btnMarkDelete" style="display:none;" onclick="app.markAction('delete')">
+                    <i class="ph-bold ph-trash"></i> 刪除
+                </button>
+                <button class="btn-action btn-warning-outline" id="btnMarkReset" style="display:none;" onclick="app.markAction('reset')">
+                    <i class="ph-bold ph-arrows-clockwise"></i> 重置
+                </button>
+                
+                <button class="btn-action btn-outline" onclick="app.toggleEditMode()" id="editBtnMain" title="編輯模式">
+                    <i class="ph-bold ph-pencil-simple"></i> 編輯
+                </button>
+                <button class="btn-action btn-primary" onclick="app.openModal('add')" title="新增/編輯學員">
+                    <i class="ph-bold ph-plus"></i> 新增
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="list-container">
+        <div class="list-table-wrapper" id="tableWrapper" style="--w-name: 110px; --w-course: 130px; --w-bal: 95px; --w-plan: 140px; --w-leave: 75px;">
+            <div class="list-header" id="listHeader">
+                <div>勾選</div>
+                <div class="resizable-col"><div id="nameColTitle">姓名</div><div class="resizer" data-col="name"></div></div>
+                <div class="resizable-col">課程日期<div class="resizer" data-col="course"></div></div>
+                <div class="resizable-col">剩餘堂數<div class="resizer" data-col="bal"></div></div>
+                <div class="resizable-col">付費項目<div class="resizer" data-col="plan"></div></div>
+                <div class="resizable-col">請假<div class="resizer" data-col="leave"></div></div>
+                <div>備註</div>
+            </div>
+            <div id="studentList"></div>
+        </div>
+    </div>
+
+    <div class="sys-dialog-overlay" id="sysDialog">
+        <div class="sys-dialog-card">
+            <div class="sys-dialog-icon" id="sysDialogIcon"></div>
+            <div class="sys-dialog-title" id="sysDialogTitle">提示</div>
+            <div class="sys-dialog-message" id="sysDialogMsg"></div>
+            <div class="sys-dialog-actions">
+                <button class="btn-dialog-cancel" id="sysDialogCancel">取消</button>
+                <button class="btn-dialog-primary" id="sysDialogConfirm">確定</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="courseModal">
+        <div class="modal-card">
+            <h3 id="courseModalTitle" style="margin-top:0; color:var(--primary);">選擇課程</h3>
+            <p style="font-size:0.9rem; color:var(--text-light); margin-bottom:16px;">請為勾選的學員選擇此日的課程：</p>
+            <div class="course-radio-list" id="courseRadioList"></div>
+            <div style="display:flex; gap:10px; margin-top:24px;">
+                <button onclick="app.confirmDateCourse()" class="btn-action btn-primary" style="flex:1; justify-content:center; padding:12px;">確定</button>
+                <button onclick="app.closeCourseModal()" class="btn-action btn-outline" style="flex:1; justify-content:center; padding:12px;">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="studentModal">
+        <div class="modal-card">
+            <h3 style="margin-top:0;">新增 / 編輯會員</h3>
+            <p style="font-size:0.8rem; color:var(--text-light); margin-top:-8px; margin-bottom:16px;">輸入既有姓名將自動帶入資料，儲存即更新。</p>
+            <form id="studentForm" onsubmit="app.handleStudentSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label">姓名</label>
+                    <input type="text" name="name" id="addNameInput" class="form-input" required placeholder="搜尋或輸入姓名..." list="dbNamesList" autocomplete="off" oninput="app.handleNameInputSearch(event)">
+                    <datalist id="dbNamesList"></datalist>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">主方案選擇 (點擊可取消)</label>
+                    <div class="plan-grid" id="planGrid_add"></div>
+                    <input type="hidden" id="mainPlan_add" value="">
+                </div>
+                <div class="switch-container">
+                    <span class="switch-label">啟用週末集訓加購</span>
+                    <label class="switch"><input type="checkbox" id="toggleTraining_add" onchange="app.toggleTrainingUI('add', this.checked)"><span class="slider"></span></label>
+                </div>
+                <div class="form-group" id="trainingOptions_add" style="display:none;">
+                    <div class="plan-grid" id="trainingGrid_add" style="grid-template-columns: 1fr;"></div>
+                    <input type="hidden" id="trainingPlan_add" value="t_none">
+                </div>
+                <div class="form-group"><label class="form-label">電話</label><input type="tel" name="phone" id="addPhoneInput" class="form-input"></div>
+                <div class="form-group"><label class="form-label">緊急聯絡人</label><input type="text" name="emergency" id="addEmergencyInput" class="form-input" placeholder="關係: 姓名 / 電話"></div>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="submit" class="btn-action btn-primary" style="flex:1; justify-content:center; padding:12px;">儲存並套用</button>
+                    <button type="button" class="btn-action btn-outline" onclick="app.closeModal('studentModal')" style="flex:1; justify-content:center; padding:12px;">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="batchPlanModal">
+        <div class="modal-card">
+            <h3 style="margin-top:0; color:var(--primary);">批次變更收費方案</h3>
+            <div class="radio-group-box">
+                <label class="radio-option"><input type="radio" name="planUpdateMode" value="stack" checked> 疊加上去</label>
+                <label class="radio-option"><input type="radio" name="planUpdateMode" value="overwrite"> 覆蓋(重置)</label>
+            </div>
+            <div class="form-group">
+                <label class="form-label">主方案選擇</label>
+                <div class="plan-grid" id="planGrid_batch"></div>
+                <input type="hidden" id="mainPlan_batch" value="">
+            </div>
+            <div class="switch-container">
+                <span class="switch-label">更新週末集訓加購</span>
+                <label class="switch"><input type="checkbox" id="toggleTraining_batch" onchange="app.toggleTrainingUI('batch', this.checked)"><span class="slider"></span></label>
+            </div>
+            <div class="form-group" id="trainingOptions_batch" style="display:none;">
+                <div class="plan-grid" id="trainingGrid_batch" style="grid-template-columns: 1fr;"></div>
+                <input type="hidden" id="trainingPlan_batch" value="t_none">
+            </div>
+            <div style="text-align:center; margin-bottom:16px; font-weight:bold; color:var(--danger);" id="batchPriceSummary">預估總收費：$0 / 每人</div>
+            <div style="display:flex; gap:10px;">
+                <button onclick="app.confirmBatchPlan()" class="btn-action btn-primary" style="flex:1; justify-content:center; padding:12px;">確認變更</button>
+                <button onclick="app.closeModal('batchPlanModal')" class="btn-action btn-outline" style="flex:1; justify-content:center; padding:12px;">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="noteModal">
+        <div class="modal-card" style="max-width:300px;">
+            <h3 style="margin-top:0;">編輯備註</h3>
+            <textarea id="noteInput" rows="4" class="form-input" placeholder="輸入備註事項..."></textarea>
+            <div style="display:flex; gap:10px; margin-top:16px;">
+                <button onclick="app.saveNote()" class="btn-action btn-primary" style="flex:1; justify-content:center;">儲存</button>
+                <button onclick="app.closeModal('noteModal')" class="btn-action btn-outline" style="flex:1; justify-content:center;">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="contactModal">
+        <div class="modal-card" style="max-width:300px; text-align:center;">
+            <div style="width:50px; height:50px; border-radius:50%; background:var(--primary-light); color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin:0 auto 12px;"><i class="ph-fill ph-user"></i></div>
+            <h3 id="contactName" style="margin-top:0; margin-bottom:8px;">姓名</h3>
+            <div style="font-size:1rem; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:8px;"><i class="ph-bold ph-phone" style="color:var(--text-light);"></i> <a href="#" id="contactPhoneLink" style="color:var(--primary); font-weight:bold; text-decoration:none;"></a></div>
+            <div style="font-size:0.9rem; color:var(--danger); display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:20px;"><i class="ph-bold ph-warning-circle"></i><span id="contactEmergency">無緊急聯絡人</span></div>
+            <button onclick="app.closeModal('contactModal')" class="btn-action btn-outline" style="width:100%; justify-content:center; padding:10px;">關閉</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="monthSummaryModal">
+        <div class="modal-card large-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-shrink:0;">
+                <h3 style="margin:0; font-size:1.2rem; color:var(--primary);">本月排程總覽</h3>
+                <button onclick="app.closeModal('monthSummaryModal')" style="background:none; border:none; font-size:1.5rem; cursor:pointer;"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <div class="summary-list" id="monthSummaryContent"></div>
+        </div>
+    </div>
+
+    <div id="receipt-print-area"></div>
+
+    <script src="data.js?v=4.2.0"></script>
+    <script src="app.js?v=4.2.0"></script>
+</body>
+</html>
+
