@@ -1,6 +1,6 @@
 /* MODEL: Style_Layer
- * VERSION: V.4.3.1
- * DESCRIPTION: Strict Syntax Validation, Cross-Platform Normalization, UI Grouping
+ * VERSION: V.4.4.0
+ * DESCRIPTION: Settings Dropdown, Sortable Headers, Print Overflow Fix
  */
 
 :root {
@@ -20,77 +20,52 @@
     --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* =========================================================
-   跨平台 UI 統一化 (iOS vs Android Normalization)
-   ========================================================= */
-
+/* --- iOS/Android 跨平台統一化 --- */
 * { 
     box-sizing: border-box; 
     -webkit-tap-highlight-color: transparent; 
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
 }
 
-/* 抹除 iOS 強制的原生按鈕與輸入框立體樣式 */
 input[type="text"], input[type="tel"], input[type="date"], select, textarea, button {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    outline: none;
+    -webkit-appearance: none; -moz-appearance: none; appearance: none; outline: none;
 }
-
-/* 消除 iOS 輸入框預設的內陰影 */
 input[type="text"], input[type="tel"], input[type="date"], select, textarea {
-    -webkit-box-shadow: none;
-    box-shadow: none;
+    -webkit-box-shadow: none; box-shadow: none;
 }
-
-/* 重建跨平台統一的下拉箭頭 */
 select {
     background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%239CA3AF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px top 50%;
-    background-size: 12px auto;
-    padding-right: 30px !important;
+    background-repeat: no-repeat; background-position: right 10px top 50%; background-size: 12px auto; padding-right: 30px !important;
 }
 
 body { 
-    margin: 0; 
-    color: var(--text); 
-    height: 100vh; 
-    height: 100dvh; 
+    margin: 0; color: var(--text); 
+    height: 100vh; height: 100dvh; 
     padding-bottom: env(safe-area-inset-bottom);
-    display: flex; 
-    flex-direction: column; 
-    overflow: hidden;
-    background-image: url('camille.jpg');
-    background-size: cover; 
-    background-position: center; 
-    background-repeat: no-repeat; 
-    /* iOS Safari/WebView 對 fixed 背景支援不穩，可能造成捲動/縮放怪異；改為 scroll 更穩 */
-    background-attachment: scroll;
+    display: flex; flex-direction: column; overflow: hidden;
+    background-image: url('camille.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;
 }
-body::before {
-    content: ''; position: absolute; inset: 0;
-    background: rgba(243, 244, 246, 0.6); backdrop-filter: blur(5px); z-index: -1;
-}
+body::before { content: ''; position: absolute; inset: 0; background: rgba(243, 244, 246, 0.6); backdrop-filter: blur(5px); z-index: -1; }
 
 /* --- 1. Top: Calendar --- */
-header {
-    background: var(--glass-header); backdrop-filter: blur(10px);
-    display: flex; flex-direction: column; padding: 12px 16px;
-    border-bottom: 1px solid var(--border); box-shadow: var(--shadow-soft);
-    z-index: 20; border-radius: 0 0 20px 20px;
-    transition: all 0.3s ease;
-}
+header { background: var(--glass-header); backdrop-filter: blur(10px); display: flex; flex-direction: column; padding: 12px 16px; border-bottom: 1px solid var(--border); box-shadow: var(--shadow-soft); z-index: 20; border-radius: 0 0 20px 20px; transition: all 0.3s ease; }
 .calendar-controls { flex-shrink: 0; display: flex; justify-content: center; align-items: center; margin-bottom: 8px; position: relative; height: 44px; }
 .nav-center { display: flex; align-items: center; gap: 20px; }
 .month-title { font-weight: 800; font-size: 1.25rem; color: var(--primary); cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: background 0.2s; }
 .month-title:active { background: var(--primary-light); transform: scale(0.95); }
 .nav-btn { background: var(--primary-light); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); transition: all 0.2s; }
 .nav-btn:active { transform: scale(0.9); }
-.right-actions { position: absolute; right: 0; display: flex; gap: 8px; }
-.header-action-btn { background: transparent; border: 1px solid var(--border); border-radius: 16px; padding: 4px 8px; font-size: 0.8rem; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 4px; font-weight: 600; }
+
+/* --- 齒輪選單設計 (右上角) --- */
+.right-actions { position: absolute; right: 0; display: flex; gap: 8px; align-items: center; }
+.header-action-btn { background: transparent; border: 1px solid var(--border); border-radius: 16px; padding: 4px 8px; font-size: 0.8rem; color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; font-weight: 600; height: 32px; min-width: 36px; transition: all 0.2s; }
 .header-action-btn:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+
+.settings-dropdown { position: absolute; top: 40px; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid var(--border); overflow: hidden; z-index: 100; min-width: 150px; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transform: translateY(-10px); transition: all 0.2s ease; }
+.settings-dropdown.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.settings-item { padding: 14px 16px; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; font-weight: 600; color: var(--text); cursor: pointer; transition: background 0.2s; border-bottom: 1px solid rgba(0,0,0,0.05); }
+.settings-item:last-child { border-bottom: none; }
+.settings-item:active { background: var(--primary-light); color: var(--primary); }
 
 .weekday-row { flex-shrink: 0; display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 8px; transition: all 0.2s;}
 .weekday-row span { font-size: 0.85rem; color: var(--text-light); font-weight: 700; opacity: 0.8; }
@@ -98,12 +73,7 @@ header {
 .calendar-grid { flex: 1; display: grid; grid-template-columns: repeat(7, 1fr); grid-template-rows: repeat(auto-fit, minmax(0, 1fr)); gap: 6px; transition: all 0.2s;}
 .calendar-hidden { display: none !important; }
 
-.day-cell {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    border-radius: 12px; font-size: 1.05rem; cursor: pointer; 
-    background: rgba(255, 255, 255, 0.5); border: 1px solid transparent;
-    position: relative; height: 100%; width: 100%; transition: all 0.2s; min-height: 40px;
-}
+.day-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; font-size: 1.05rem; cursor: pointer; background: rgba(255, 255, 255, 0.5); border: 1px solid transparent; position: relative; height: 100%; width: 100%; transition: all 0.2s; min-height: 40px; }
 .day-cell.empty { background: transparent; cursor: default; }
 .day-cell.weekend-text { color: var(--weekend-red); font-weight: 600; }
 .day-cell.today { font-weight: 900; }
@@ -114,10 +84,7 @@ header {
 .day-cell.has-data .dot { display: block; }
 
 /* --- 2. Controls --- */
-.control-bar {
-    background: var(--glass-bg); padding: 12px 16px; border-bottom: 1px solid var(--border);
-    display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; backdrop-filter: blur(5px);
-}
+.control-bar { background: var(--glass-bg); padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; backdrop-filter: blur(5px); }
 .toolbar-row { display: flex; gap: 8px; align-items: center; width: 100%; }
 .search-input { flex: 1; padding: 10px 16px; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; background: var(--white); outline: none; font-size: 0.95rem; }
 .btn-action { padding: 8px 16px; border-radius: 12px; border: none; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.1s; }
@@ -128,44 +95,20 @@ header {
 .btn-cancel { background: #6B7280; color: white; }
 .btn-plan { background: #F59E0B; color: white; }
 .btn-danger-outline { border: 1px solid var(--danger); color: var(--danger); background: var(--white); }
-.btn-warning-outline { border: 1px solid var(--warning); color: var(--warning); background: var(--white); }
+.btn-warning-outline { border: 1px solid #D97706; color: #D97706; background: var(--white); }
 
-/* --- 3. List --- */
-/*
-   iPhone 顯示「整頁縮小」的主因：表格容器設了 min-width: 780px。
-   某些 iOS WebView 會嘗試把整頁縮到能一次看完 780px 寬度，導致整個 UI 變超小。
-   解法：讓外層容器寬度永遠 = 100%，把「寬度需求」移到內層列，改成橫向捲動。
-*/
-.list-container {
-    flex: 1;
-    overflow: auto;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 0;
-    background: var(--glass-bg);
-    display: flex;
-    flex-direction: column;
-}
-.list-table-wrapper {
-    --w-name: 110px;
-    --w-course: 130px;
-    --w-bal: 95px;
-    --w-plan: 140px;
-    --w-leave: 75px;
-    min-width: 0;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
-.list-header, .student-row {
-    display: grid;
-    /* 讓表格列自己變寬，但只在 list-container 內做橫向捲動，不要縮整頁 */
-    min-width: 780px;
-    grid-template-columns: 50px var(--w-name) var(--w-course) var(--w-bal) var(--w-plan) var(--w-leave) 50px !important;
-    align-items: center;
-    text-align: center;
-}
+/* --- 3. List & Sort Headers --- */
+.list-container { flex: 1; overflow: auto; padding: 0; background: var(--glass-bg); display: flex; flex-direction: column; }
+.list-table-wrapper { --w-name: 110px; --w-course: 130px; --w-bal: 95px; --w-plan: 140px; --w-leave: 75px; min-width: 780px; display: flex; flex-direction: column; }
+.list-header, .student-row { display: grid; grid-template-columns: 50px var(--w-name) var(--w-course) var(--w-bal) var(--w-plan) var(--w-leave) 50px !important; align-items: center; text-align: center; }
 .list-header { background: rgba(248, 250, 252, 0.95); border-bottom: 1px solid var(--border); padding: 10px 4px; font-size: 0.8rem; color: var(--text-light); font-weight: 700; position: sticky; top: 0; z-index: 10; backdrop-filter: blur(5px); }
+
+/* 排序標題設計 */
+.sortable-col { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; padding: 2px 6px; border-radius: 6px; transition: background 0.2s; }
+.sortable-col:active { background: rgba(0,0,0,0.05); }
+.sort-icon { font-size: 0.8rem; color: #9CA3AF; transition: color 0.2s; }
+.sort-icon.active { color: var(--primary); font-weight: bold; }
+
 .student-row { padding: 12px 4px; border-bottom: 1px solid rgba(0,0,0,0.05); min-height: 56px; background: rgba(255,255,255,0.4); transition: background 0.2s; }
 .resizable-col { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2;}
 .resizer { position: absolute; right: -5px; top: 0; bottom: 0; width: 14px; cursor: col-resize; z-index: 2; touch-action: none; }
@@ -173,8 +116,6 @@ header {
 
 .student-row.selected-row { background-color: #EFF6FF; border-left: 4px solid var(--primary); }
 .student-row.leave-mode { background-color: rgba(255, 247, 237, 0.8); }
-.student-row.delete-mode { background-color: #FEF2F2 !important; border-left: 4px solid var(--danger) !important; opacity: 0.8; }
-.student-row.reset-mode { background-color: #FFFBEB !important; border-left: 4px solid var(--warning) !important; }
 
 .col-check { display: flex; justify-content: center; }
 .col-name { font-weight: 600; font-size: 0.95rem; text-align: left; padding-left: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; }
@@ -192,12 +133,10 @@ header {
 
 .custom-check { width: 26px; height: 26px; border: 2px solid #CBD5E1; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; transition: all 0.2s; background: white; cursor: pointer; }
 .custom-check.checked { background: var(--primary); border-color: var(--primary); }
-.custom-check.danger-check { background: var(--danger); border-color: var(--danger); }
-.custom-check.warning-check { background: var(--warning); border-color: var(--warning); }
 .note-btn { background: none; border: none; color: #9CA3AF; font-size: 1.4rem; cursor: pointer; }
 .note-btn.has-note { color: var(--warning); }
 
-/* --- SaaS Custom Dialog (Alert/Confirm) --- */
+/* --- SaaS Custom Dialogs --- */
 .sys-dialog-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 9999; display: none; align-items: center; justify-content: center; }
 .sys-dialog-overlay.open { display: flex; animation: fadeIn 0.2s; }
 .sys-dialog-card { background: var(--white); width: 85%; max-width: 320px; border-radius: 24px; padding: 28px 24px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
@@ -249,3 +188,21 @@ input:checked + .slider:before { transform: translateX(20px); }
 .course-radio-list { display: flex; flex-direction: column; gap: 10px; }
 .course-radio-item { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.2s; }
 .course-radio-item input { margin: 0; transform: scale(1.2); }
+
+/* --- 解決列印裁切問題與收據模板 --- */
+@media print { 
+    /* 核心修復：強制解除列印模式下的螢幕高度鎖定，允許無限長度向下延伸 */
+    html, body { height: auto !important; overflow: visible !important; display: block !important; position: static !important; } 
+    body * { visibility: hidden; } 
+    #receipt-print-area, #receipt-print-area * { visibility: visible; } 
+    #receipt-print-area { position: absolute; left: 0; top: 0; width: 100%; display: block; } 
+    .receipt-page { width: 100%; max-width: 800px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 40px; } 
+    .receipt-slip { border: 2px solid #000; padding: 25px; position: relative; page-break-inside: avoid; border-radius: 12px;} 
+    .receipt-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 15px; margin-bottom: 20px; } 
+    .receipt-header h2 { margin: 0 0 5px 0; font-size: 24px; }
+    .receipt-body { display: flex; flex-direction: column; gap: 15px; font-size: 18px; font-family: sans-serif; } 
+    .receipt-row { display: flex; justify-content: space-between; align-items: center; } 
+    .receipt-footer { margin-top: 40px; display: flex; justify-content: flex-end; align-items: flex-end;} 
+    .signature-line { margin-top: 20px; width: 200px; border-bottom: 1px solid #000; display: inline-block; margin-left: 10px;} 
+    .amount-line { font-size: 22px; font-weight: bold; width: 100%; border-bottom: 1px solid #000; display: inline-block; padding-bottom: 4px;}
+}

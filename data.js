@@ -1,7 +1,7 @@
 /**
  * MODEL: Data_Layer
- * VERSION: V.4.2.0
- * DESCRIPTION: Multi-plan Array, Stacking Logic Data Structure
+ * VERSION: V.4.4.0
+ * DESCRIPTION: Data Structure, Support for Multi-plans
  */
 
 const PRICING_PLANS = {

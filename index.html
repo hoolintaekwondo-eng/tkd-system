@@ -2,11 +2,10 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <!-- iPhone / iOS WebView 修正：避免因寬表格(min-width)而被整頁縮小顯示 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TKD 管理 V4.3.1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TKD 管理 V4.4</title>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css?v=4.3.1">
+    <link rel="stylesheet" href="style.css?v=4.4.0">
 </head>
 <body>
 
@@ -22,12 +21,19 @@
                 <button class="header-action-btn" onclick="app.openMonthSummary()" title="全月排程總覽">
                     <i class="ph-bold ph-calendar-blank" style="color:#2563EB; font-size:1.2rem;"></i>
                 </button>
-                <button class="header-action-btn" onclick="app.exportExcel()" title="匯出 Excel">
-                    <i class="ph-bold ph-microsoft-excel-logo" style="color:#10B981; font-size:1.2rem;"></i>
-                </button>
-                <button class="header-action-btn" onclick="app.printReceipt()" title="列印收據">
-                    <i class="ph-bold ph-printer" style="color:#4B5563; font-size:1.2rem;"></i>
-                </button>
+                <div style="position: relative;">
+                    <button class="header-action-btn" id="settingsBtn" onclick="app.toggleSettings(event)" title="設定與匯出">
+                        <i class="ph-bold ph-gear" style="color:#4B5563; font-size:1.2rem;"></i>
+                    </button>
+                    <div class="settings-dropdown" id="settingsDropdown">
+                        <div class="settings-item" onclick="app.exportExcel()">
+                            <i class="ph-bold ph-microsoft-excel-logo" style="color:#10B981; font-size:1.2rem;"></i> 匯出 Excel
+                        </div>
+                        <div class="settings-item" onclick="app.printReceipt()">
+                            <i class="ph-bold ph-printer" style="color:#4B5563; font-size:1.2rem;"></i> 列印本次收據
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -47,26 +53,24 @@
         </div>
 
         <div class="toolbar-row">
-            <button class="btn-action btn-save" onclick="app.commitBatch()" title="確認並寫入資料" style="padding-left:20px; padding-right:20px;">
-                <i class="ph-bold ph-check"></i> 確定
-            </button>
-            <button class="btn-action btn-cancel" onclick="app.discardBatch()" title="放棄所有變更">
-                <i class="ph-bold ph-x"></i> 取消
-            </button>
+            <div style="display:flex; gap:8px; margin-right:auto;">
+                <button class="btn-action btn-save" onclick="app.commitBatch()" title="確認寫入排程與請假" style="padding-left:24px; padding-right:24px;">
+                    <i class="ph-bold ph-check"></i> 確定
+                </button>
+                <button class="btn-action btn-cancel" onclick="app.discardBatch()" title="放棄目前操作">
+                    <i class="ph-bold ph-x"></i> 取消
+                </button>
+            </div>
 
-            <div style="margin-left:auto; display:flex; gap:8px;">
-                <button class="btn-action btn-danger-outline" id="btnMarkDelete" style="display:none;" onclick="app.markAction('delete')">
+            <div style="display:flex; gap:8px;">
+                <button class="btn-action btn-danger-outline" onclick="app.deleteSelected()" title="刪除勾選學員">
                     <i class="ph-bold ph-trash"></i> 刪除
                 </button>
-                <button class="btn-action btn-warning-outline" id="btnMarkReset" style="display:none;" onclick="app.markAction('reset')">
+                <button class="btn-action btn-warning-outline" onclick="app.resetSelected()" title="重置勾選學員(清空點數方案)">
                     <i class="ph-bold ph-arrows-clockwise"></i> 重置
                 </button>
-                
-                <button class="btn-action btn-outline" onclick="app.toggleEditMode()" id="editBtnMain" title="編輯模式">
-                    <i class="ph-bold ph-pencil-simple"></i> 編輯
-                </button>
                 <button class="btn-action btn-primary" onclick="app.openModal('add')" title="新增/編輯學員">
-                    <i class="ph-bold ph-plus"></i> 新增
+                    <i class="ph-bold ph-plus"></i> 新增/編輯
                 </button>
             </div>
         </div>
@@ -76,11 +80,36 @@
         <div class="list-table-wrapper" id="tableWrapper" style="--w-name: 110px; --w-course: 130px; --w-bal: 95px; --w-plan: 140px; --w-leave: 75px;">
             <div class="list-header" id="listHeader">
                 <div>勾選</div>
-                <div class="resizable-col"><div id="nameColTitle">姓名</div><div class="resizer" data-col="name"></div></div>
-                <div class="resizable-col">課程日期<div class="resizer" data-col="course"></div></div>
-                <div class="resizable-col">剩餘堂數<div class="resizer" data-col="bal"></div></div>
-                <div class="resizable-col">付費項目<div class="resizer" data-col="plan"></div></div>
-                <div class="resizable-col">請假<div class="resizer" data-col="leave"></div></div>
+                <div class="resizable-col">
+                    <div class="sortable-col" onclick="app.sortBy('name')">
+                        <span id="nameColTitle">姓名</span> <i class="ph-bold ph-caret-up-down sort-icon" id="sort-icon-name"></i>
+                    </div>
+                    <div class="resizer" data-col="name"></div>
+                </div>
+                <div class="resizable-col">
+                    <div class="sortable-col" onclick="app.sortBy('course')">
+                        課程日期 <i class="ph-bold ph-caret-up-down sort-icon" id="sort-icon-course"></i>
+                    </div>
+                    <div class="resizer" data-col="course"></div>
+                </div>
+                <div class="resizable-col">
+                    <div class="sortable-col" onclick="app.sortBy('bal')">
+                        剩餘堂數 <i class="ph-bold ph-caret-up-down sort-icon" id="sort-icon-bal"></i>
+                    </div>
+                    <div class="resizer" data-col="bal"></div>
+                </div>
+                <div class="resizable-col">
+                    <div class="sortable-col" onclick="app.sortBy('plan')">
+                        付費項目 <i class="ph-bold ph-caret-up-down sort-icon" id="sort-icon-plan"></i>
+                    </div>
+                    <div class="resizer" data-col="plan"></div>
+                </div>
+                <div class="resizable-col">
+                    <div class="sortable-col" onclick="app.sortBy('leave')">
+                        請假 <i class="ph-bold ph-caret-up-down sort-icon" id="sort-icon-leave"></i>
+                    </div>
+                    <div class="resizer" data-col="leave"></div>
+                </div>
                 <div>備註</div>
             </div>
             <div id="studentList"></div>
@@ -102,7 +131,6 @@
     <div class="modal-overlay" id="courseModal">
         <div class="modal-card">
             <h3 id="courseModalTitle" style="margin-top:0; color:var(--primary);">選擇課程</h3>
-            <p style="font-size:0.9rem; color:var(--text-light); margin-bottom:16px;">請為勾選的學員選擇此日的課程：</p>
             <div class="course-radio-list" id="courseRadioList"></div>
             <div style="display:flex; gap:10px; margin-top:24px;">
                 <button onclick="app.confirmDateCourse()" class="btn-action btn-primary" style="flex:1; justify-content:center; padding:12px;">確定</button>
@@ -164,7 +192,7 @@
                 <div class="plan-grid" id="trainingGrid_batch" style="grid-template-columns: 1fr;"></div>
                 <input type="hidden" id="trainingPlan_batch" value="t_none">
             </div>
-            <div style="text-align:center; margin-bottom:16px; font-weight:bold; color:var(--danger);" id="batchPriceSummary">預估總收費：$0 / 每人</div>
+            <div style="text-align:center; margin-bottom:16px; font-weight:bold; color:var(--danger);" id="batchPriceSummary">預估單人收費：$0</div>
             <div style="display:flex; gap:10px;">
                 <button onclick="app.confirmBatchPlan()" class="btn-action btn-primary" style="flex:1; justify-content:center; padding:12px;">確認變更</button>
                 <button onclick="app.closeModal('batchPlanModal')" class="btn-action btn-outline" style="flex:1; justify-content:center; padding:12px;">取消</button>
@@ -205,8 +233,8 @@
 
     <div id="receipt-print-area"></div>
 
-    <script src="data.js?v=4.2.0"></script>
-    <script src="app.js?v=4.2.0"></script>
+    <script src="data.js?v=4.4.0"></script>
+    <script src="app.js?v=4.4.0"></script>
 </body>
 </html>
 
