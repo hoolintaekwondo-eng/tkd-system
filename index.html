@@ -8,6 +8,21 @@
     <link rel="stylesheet" href="style.css?v=4.9.0">
 </head>
 <body>
+<script>
+(function() {
+  const correctPassword = "tkd2026"; //
+  const saved = sessionStorage.getItem("auth");
+  if (saved !== "ok") {
+    const input = prompt("🔐 請輸入系統密碼");
+    if (input === correctPassword) {
+      sessionStorage.setItem("auth", "ok");
+    } else {
+      alert("密碼錯誤");
+      document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>🚫 無法進入系統</h2>";
+    }
+  }
+})();
+</script>
 
     <header id="appHeader">
         <div class="calendar-controls">
