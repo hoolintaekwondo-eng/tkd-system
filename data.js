@@ -1,7 +1,7 @@
 /**
  * MODEL: Data_Layer
- * VERSION: V.4.4.0
- * DESCRIPTION: Data Structure, Support for Multi-plans
+ * VERSION: V.4.9.0
+ * DESCRIPTION: Absolute Zero State (Empty default plans)
  */
 
 const PRICING_PLANS = {
@@ -47,7 +47,8 @@ function initDB() {
             name: name,
             phone: '',
             emergency: '',
-            activePlans: ['p_single'], 
+            groupId: '', 
+            activePlans: [], // V4.9 徹底清空預設方案
             trainingId: 't_none',
             balance: 0,
             accumulated: 0,
@@ -57,12 +58,13 @@ function initDB() {
         needsSave = true;
     } else {
         students.forEach(s => {
-            if (s.mainPlanId && !s.activePlans) {
+            if (s.mainPlanId && (!s.activePlans || s.activePlans.length === 0)) {
                 s.activePlans = [s.mainPlanId];
                 delete s.mainPlanId;
                 needsSave = true;
             }
-            if (!s.activePlans) s.activePlans = ['p_single'];
+            if (!s.activePlans) s.activePlans = []; 
+            if (s.groupId === undefined) { s.groupId = ''; needsSave = true; }
         });
     }
 

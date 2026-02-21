@@ -1,62 +1,30 @@
 /* MODEL: Style_Layer
- * VERSION: V.4.4.0
- * DESCRIPTION: Settings Dropdown, Sortable Headers, Print Overflow Fix
+ * VERSION: V.4.9.0
+ * DESCRIPTION: Ultra Compact Buttons, Hitbox adjustments
  */
 
 :root {
-    --primary: #4F46E5; 
-    --primary-light: #EEF2FF;
-    --success: #10B981; 
-    --warning: #F59E0B; 
-    --danger: #EF4444;
-    --weekend-red: #F87171;
-    --text: #1F2937; 
-    --text-light: #4B5563;
-    --white: #FFFFFF; 
-    --border: #E5E7EB;
-    
-    --glass-bg: rgba(255, 255, 255, 0.85);
-    --glass-header: rgba(255, 255, 255, 0.92);
-    --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --primary: #4F46E5; --primary-light: #EEF2FF; --success: #10B981; --warning: #F59E0B; --danger: #EF4444; --weekend-red: #F87171;
+    --text: #1F2937; --text-light: #4B5563; --white: #FFFFFF; --border: #E5E7EB;
+    --glass-bg: rgba(255, 255, 255, 0.85); --glass-header: rgba(255, 255, 255, 0.92); --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* --- iOS/Android 跨平台統一化 --- */
-* { 
-    box-sizing: border-box; 
-    -webkit-tap-highlight-color: transparent; 
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+input[type="text"], input[type="tel"], input[type="date"], select, textarea, button { -webkit-appearance: none; -moz-appearance: none; appearance: none; outline: none; }
+input[type="text"], input[type="tel"], input[type="date"], select, textarea { -webkit-box-shadow: none; box-shadow: none; }
+select { background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%239CA3AF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 10px top 50%; background-size: 12px auto; padding-right: 30px !important; }
 
-input[type="text"], input[type="tel"], input[type="date"], select, textarea, button {
-    -webkit-appearance: none; -moz-appearance: none; appearance: none; outline: none;
-}
-input[type="text"], input[type="tel"], input[type="date"], select, textarea {
-    -webkit-box-shadow: none; box-shadow: none;
-}
-select {
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%239CA3AF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-    background-repeat: no-repeat; background-position: right 10px top 50%; background-size: 12px auto; padding-right: 30px !important;
-}
-
-body { 
-    margin: 0; color: var(--text); 
-    height: 100vh; height: 100dvh; 
-    padding-bottom: env(safe-area-inset-bottom);
-    display: flex; flex-direction: column; overflow: hidden;
-    background-image: url('camille.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;
-}
+body { margin: 0; color: var(--text); height: 100vh; height: 100dvh; padding-bottom: env(safe-area-inset-bottom); display: flex; flex-direction: column; overflow: hidden; background-image: url('camille.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; }
 body::before { content: ''; position: absolute; inset: 0; background: rgba(243, 244, 246, 0.6); backdrop-filter: blur(5px); z-index: -1; }
 
-/* --- 1. Top: Calendar --- */
 header { background: var(--glass-header); backdrop-filter: blur(10px); display: flex; flex-direction: column; padding: 12px 16px; border-bottom: 1px solid var(--border); box-shadow: var(--shadow-soft); z-index: 20; border-radius: 0 0 20px 20px; transition: all 0.3s ease; }
 .calendar-controls { flex-shrink: 0; display: flex; justify-content: center; align-items: center; margin-bottom: 8px; position: relative; height: 44px; }
 .nav-center { display: flex; align-items: center; gap: 20px; }
 .month-title { font-weight: 800; font-size: 1.25rem; color: var(--primary); cursor: pointer; padding: 4px 8px; border-radius: 8px; transition: background 0.2s; }
 .month-title:active { background: var(--primary-light); transform: scale(0.95); }
-.nav-btn { background: var(--primary-light); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); transition: all 0.2s; }
+.nav-btn { background: var(--primary-light); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: cursor: pointer; color: var(--primary); transition: all 0.2s; }
 .nav-btn:active { transform: scale(0.9); }
 
-/* --- 齒輪選單設計 (右上角) --- */
 .right-actions { position: absolute; right: 0; display: flex; gap: 8px; align-items: center; }
 .header-action-btn { background: transparent; border: 1px solid var(--border); border-radius: 16px; padding: 4px 8px; font-size: 0.8rem; color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; font-weight: 600; height: 32px; min-width: 36px; transition: all 0.2s; }
 .header-action-btn:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
@@ -64,8 +32,6 @@ header { background: var(--glass-header); backdrop-filter: blur(10px); display: 
 .settings-dropdown { position: absolute; top: 40px; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid var(--border); overflow: hidden; z-index: 100; min-width: 150px; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transform: translateY(-10px); transition: all 0.2s ease; }
 .settings-dropdown.open { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .settings-item { padding: 14px 16px; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; font-weight: 600; color: var(--text); cursor: pointer; transition: background 0.2s; border-bottom: 1px solid rgba(0,0,0,0.05); }
-.settings-item:last-child { border-bottom: none; }
-.settings-item:active { background: var(--primary-light); color: var(--primary); }
 
 .weekday-row { flex-shrink: 0; display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 8px; transition: all 0.2s;}
 .weekday-row span { font-size: 0.85rem; color: var(--text-light); font-weight: 700; opacity: 0.8; }
@@ -83,10 +49,14 @@ header { background: var(--glass-header); backdrop-filter: blur(10px); display: 
 .day-cell .dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; position: absolute; top: 6px; right: 6px; display: none; }
 .day-cell.has-data .dot { display: block; }
 
-/* --- 2. Controls --- */
 .control-bar { background: var(--glass-bg); padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; backdrop-filter: blur(5px); }
 .toolbar-row { display: flex; gap: 8px; align-items: center; width: 100%; }
 .search-input { flex: 1; padding: 10px 16px; border: 1px solid rgba(0,0,0,0.1); border-radius: 12px; background: var(--white); outline: none; font-size: 0.95rem; }
+
+.filter-group-container { display: flex; gap: 6px; align-items: center; }
+.group-filter-btn { padding: 6px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--white); cursor: pointer; font-size: 0.85rem; font-weight: bold; color: var(--text-light); transition: all 0.2s; }
+.group-filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
 .btn-action { padding: 8px 16px; border-radius: 12px; border: none; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.1s; }
 .btn-action:active { transform: scale(0.95); }
 .btn-primary { background: var(--primary); color: white; }
@@ -97,14 +67,15 @@ header { background: var(--glass-header); backdrop-filter: blur(10px); display: 
 .btn-danger-outline { border: 1px solid var(--danger); color: var(--danger); background: var(--white); }
 .btn-warning-outline { border: 1px solid #D97706; color: #D97706; background: var(--white); }
 
-/* --- 3. List & Sort Headers --- */
+/* V4.9 核心修復: 極限縮小按鈕與間距，保證所有按鈕擠在同一行 */
+.btn-sm { padding: 4px 6px !important; font-size: 0.8rem !important; gap: 4px !important; border-radius: 8px !important; }
+
 .list-container { flex: 1; overflow: auto; padding: 0; background: var(--glass-bg); display: flex; flex-direction: column; }
-.list-table-wrapper { --w-name: 110px; --w-course: 130px; --w-bal: 95px; --w-plan: 140px; --w-leave: 75px; min-width: 780px; display: flex; flex-direction: column; }
-.list-header, .student-row { display: grid; grid-template-columns: 50px var(--w-name) var(--w-course) var(--w-bal) var(--w-plan) var(--w-leave) 50px !important; align-items: center; text-align: center; }
+.list-table-wrapper { --w-name: 110px; --w-group: 65px; --w-course: 130px; --w-bal: 110px; --w-plan: 140px; --w-fee: 85px; --w-leave: 75px; min-width: 900px; display: flex; flex-direction: column; }
+.list-header, .student-row { display: grid; grid-template-columns: 50px var(--w-name) var(--w-group) var(--w-course) var(--w-bal) var(--w-plan) var(--w-fee) var(--w-leave) 50px !important; align-items: center; text-align: center; }
 .list-header { background: rgba(248, 250, 252, 0.95); border-bottom: 1px solid var(--border); padding: 10px 4px; font-size: 0.8rem; color: var(--text-light); font-weight: 700; position: sticky; top: 0; z-index: 10; backdrop-filter: blur(5px); }
 
-/* 排序標題設計 */
-.sortable-col { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; padding: 2px 6px; border-radius: 6px; transition: background 0.2s; }
+.sortable-col { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; padding: 2px 6px; border-radius: 6px; transition: background 0.2s; line-height: 1.2;}
 .sortable-col:active { background: rgba(0,0,0,0.05); }
 .sort-icon { font-size: 0.8rem; color: #9CA3AF; transition: color 0.2s; }
 .sort-icon.active { color: var(--primary); font-weight: bold; }
@@ -120,23 +91,31 @@ header { background: var(--glass-header); backdrop-filter: blur(10px); display: 
 .col-check { display: flex; justify-content: center; }
 .col-name { font-weight: 600; font-size: 0.95rem; text-align: left; padding-left: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; }
 .has-phone { color: #2563EB; text-decoration: underline; cursor: pointer; font-weight: 700; }
+.col-group select { width: 100%; max-width: 55px; font-size: 0.85rem; border: 1px solid transparent; border-radius: 6px; background: var(--primary-light); color: var(--primary); font-weight: bold; padding: 4px 2px; text-align: center; outline:none; cursor:pointer; transition: all 0.2s; }
+.col-group select:hover { border-color: var(--primary); background: white; }
+
 .col-course { font-size: 0.8rem; color: var(--success); font-weight: 700; line-height: 1.4; }
-.col-bal { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 800; color: var(--text); }
-.col-plan { font-size: 0.75rem; color: var(--text-light); display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; gap: 2px; }
-.plan-tag { background: #E0E7FF; color: #3730A3; padding: 2px 6px; border-radius: 4px; }
-.training-tag { background: #FEF3C7; color: #92400E; padding: 2px 6px; border-radius: 4px; }
+.col-bal { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 800; color: var(--text); line-height: 1.1; }
+.bal-main { font-size: 1rem; }
+.bal-sub { font-size: 0.7rem; color: var(--text-light); font-weight: normal; margin-top: 2px; }
 .val-session { color: var(--success); }
 .val-low { color: var(--danger); }
-.val-monthly { color: var(--primary); }
+.val-na { color: #9CA3AF; font-size: 0.85rem; }
+.col-plan { font-size: 0.75rem; color: var(--text-light); display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; gap: 2px; }
+.col-fee { font-size: 0.9rem; font-weight: bold; color: var(--danger); } 
+.plan-tag { background: #E0E7FF; color: #3730A3; padding: 2px 6px; border-radius: 4px; }
+.plan-tag.empty { background: #F3F4F6; color: #6B7280; border: 1px dashed #D1D5DB; } 
+.training-tag { background: #FEF3C7; color: #92400E; padding: 2px 6px; border-radius: 4px; }
 .col-leave select { width: 90%; font-size: 0.85rem; border: 1px solid var(--border); border-radius: 6px; background: rgba(255,255,255,0.8); padding: 4px; text-align: center; outline:none; }
 .col-note { display: flex; justify-content: center; }
 
+/* V4.9 擴大勾選區塊指標 */
 .custom-check { width: 26px; height: 26px; border: 2px solid #CBD5E1; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; transition: all 0.2s; background: white; cursor: pointer; }
 .custom-check.checked { background: var(--primary); border-color: var(--primary); }
 .note-btn { background: none; border: none; color: #9CA3AF; font-size: 1.4rem; cursor: pointer; }
 .note-btn.has-note { color: var(--warning); }
 
-/* --- SaaS Custom Dialogs --- */
+/* --- SaaS Custom Dialogs & Modals --- */
 .sys-dialog-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 9999; display: none; align-items: center; justify-content: center; }
 .sys-dialog-overlay.open { display: flex; animation: fadeIn 0.2s; }
 .sys-dialog-card { background: var(--white); width: 85%; max-width: 320px; border-radius: 24px; padding: 28px 24px; text-align: center; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
@@ -152,14 +131,13 @@ header { background: var(--glass-header); backdrop-filter: blur(10px); display: 
 .btn-dialog-danger { background: var(--danger); color: white; }
 .btn-dialog-cancel { background: #F1F5F9; color: var(--text-light); }
 
-/* --- Modals --- */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 100; display: none; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; animation: fadeIn 0.2s; }
 .modal-card { background: rgba(255, 255, 255, 0.95); width: 90%; max-width: 400px; border-radius: 20px; padding: 24px; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
 @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-.radio-group-box { display: flex; gap: 10px; margin-bottom: 16px; background: #F8FAFC; padding: 10px; border-radius: 12px; }
-.radio-option { flex: 1; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+.radio-group-box { display: flex; gap: 10px; margin-bottom: 16px; background: #F8FAFC; padding: 10px; border-radius: 12px; flex-wrap: wrap;}
+.radio-option { flex: 1; min-width: 45%; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
 .modal-card.large-card { max-width: 95%; width: 500px; height: 75vh; display: flex; flex-direction: column; padding: 20px; }
 .summary-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 4px; }
 .summary-item-card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); flex-shrink: 0; }
@@ -189,9 +167,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .course-radio-item { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; cursor: pointer; transition: all 0.2s; }
 .course-radio-item input { margin: 0; transform: scale(1.2); }
 
-/* --- 解決列印裁切問題與收據模板 --- */
 @media print { 
-    /* 核心修復：強制解除列印模式下的螢幕高度鎖定，允許無限長度向下延伸 */
     html, body { height: auto !important; overflow: visible !important; display: block !important; position: static !important; } 
     body * { visibility: hidden; } 
     #receipt-print-area, #receipt-print-area * { visibility: visible; } 
