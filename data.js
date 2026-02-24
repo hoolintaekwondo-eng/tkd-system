@@ -1,10 +1,11 @@
 /**
  * MODEL: Data_Layer
- * VERSION: V.4.9.0
- * DESCRIPTION: Absolute Zero State (Empty default plans)
+ * VERSION: V.4.11.0
+ * DESCRIPTION: Dynamic Config Migration (tkd_db_settings)
  */
 
-const PRICING_PLANS = {
+// 預設靜態資料 (僅供首次啟動時寫入資料庫使用)
+const DEFAULT_PRICING = {
     MAIN: [
         { id: 'p_single', name: '單堂計費', sessions: 1, price: 800 },
         { id: 'p_3m_10', name: '三個月 10 堂', sessions: 10, price: 7000 },
@@ -18,7 +19,7 @@ const PRICING_PLANS = {
     ]
 };
 
-const WEEKLY_SCHEDULE = {
+const DEFAULT_SCHEDULE = {
     1: [ { id: 'mon_01', time: '18:00–19:00', name: '兒童體適能' }, { id: 'mon_02', time: '19:20–20:40', name: '初階對練' } ],
     2: [ { id: 'tue_01', time: '18:00–19:20', name: '初階班' }, { id: 'tue_02', time: '19:40–21:00', name: '高階班' } ],
     3: [ { id: 'wed_01', time: '18:00–19:20', name: '高階班' }, { id: 'wed_02', time: '19:40–21:00', name: '初階班' } ],
@@ -37,6 +38,7 @@ const RAW_NAMES_STR = `方庭祐,吳承熙,連紹洋,曾品睿,林朔禾,林子�
 const NAME_ARRAY = RAW_NAMES_STR.split(',').map(n => n.trim()).filter(n => n.length > 0);
 
 function initDB() {
+    // 1. 初始化學員資料庫
     let currentData = localStorage.getItem('tkd_db_students');
     let needsSave = false;
     let students = currentData ? JSON.parse(currentData) : [];
@@ -48,7 +50,7 @@ function initDB() {
             phone: '',
             emergency: '',
             groupId: '', 
-            activePlans: [], // V4.9 徹底清空預設方案
+            activePlans: [], 
             trainingId: 't_none',
             balance: 0,
             accumulated: 0,
@@ -58,11 +60,7 @@ function initDB() {
         needsSave = true;
     } else {
         students.forEach(s => {
-            if (s.mainPlanId && (!s.activePlans || s.activePlans.length === 0)) {
-                s.activePlans = [s.mainPlanId];
-                delete s.mainPlanId;
-                needsSave = true;
-            }
+            if (s.mainPlanId && (!s.activePlans || s.activePlans.length === 0)) { s.activePlans = [s.mainPlanId]; delete s.mainPlanId; needsSave = true; }
             if (!s.activePlans) s.activePlans = []; 
             if (s.groupId === undefined) { s.groupId = ''; needsSave = true; }
         });
@@ -70,7 +68,22 @@ function initDB() {
 
     if (needsSave) localStorage.setItem('tkd_db_students', JSON.stringify(students));
     if (!localStorage.getItem('tkd_db_attendance')) localStorage.setItem('tkd_db_attendance', JSON.stringify({}));
+
+    // 2. 核心升級：初始化動態設定資料庫 (V.4.11.0)
+    let currentSettings = localStorage.getItem('tkd_db_settings');
+    if (!currentSettings) {
+        currentSettings = {
+            PRICING: DEFAULT_PRICING,
+            SCHEDULE: DEFAULT_SCHEDULE
+        };
+        localStorage.setItem('tkd_db_settings', JSON.stringify(currentSettings));
+    }
 }
 
-window.TKD_DATA = { PRICING: PRICING_PLANS, SCHEDULE: WEEKLY_SCHEDULE, RAW_NAMES: NAME_ARRAY, init: initDB };
+// 供全局讀取的動態獲取方法，確保所有 UI 都吃到最新設定
+window.TKD_DATA = { 
+    RAW_NAMES: NAME_ARRAY, 
+    init: initDB,
+    getSettings: () => JSON.parse(localStorage.getItem('tkd_db_settings')) || { PRICING: DEFAULT_PRICING, SCHEDULE: DEFAULT_SCHEDULE }
+};
 
