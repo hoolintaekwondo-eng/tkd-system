@@ -1,3 +1,6 @@
+const SUPABASE_URL = 'https://ddgiebiqfdimllxypgqo.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_2McIHvaAnOMZLtpFxDuKxg_qGbFlFWY';
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 /**
  * MODEL: Logic_Layer
  * VERSION: V.4.11.0
